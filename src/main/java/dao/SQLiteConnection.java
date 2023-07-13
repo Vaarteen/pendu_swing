@@ -33,8 +33,7 @@ public final class SQLiteConnection {
         // Est-ce que j'ai déjà une connection construite ?
         if (instance == null) {  // Si non, je la construis et je la retourne
             try {
-                //SQLiteConnection.class.getResourceAsStream("/resources/config.properties")
-                String url = "jdbc:sqlite:resources/pendu.db";
+                String url = "jdbc:sqlite:pendu.db";
                 // Forcer Java à trouver le driver dans les bibliothèques
                 // Normalement inutile, mais parfois JEE ne trouve pas tout seul
                 Class.forName("org.sqlite.JDBC");
@@ -52,7 +51,7 @@ public final class SQLiteConnection {
                 );
                 System.exit(2);
             } catch (SQLException ex) {
-                String errorMsg = "Connexion au serveur SQLite impossible.\n"
+                String errorMsg = "Connexion à la base de données SQLite impossible.\n"
                         + "Vérifiez le chemin de votre base de données.";
                 JOptionPane.showMessageDialog(
                         null,
