@@ -3,9 +3,6 @@ package gui;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Font;
-import java.awt.FontFormatException;
-import java.io.IOException;
-import java.io.InputStream;
 import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -25,12 +22,8 @@ public class HangmanPanel extends JPanel {
     public HangmanPanel(String title) {
         this.title = title;
         layout = new BorderLayout();
-        try {
-            InputStream stream = HangmanPanel.class.getResourceAsStream("/fonts/retro-flower.regular.otf");
-            titleFont = Font.createFont(Font.TRUETYPE_FONT, stream).deriveFont(96f);
-        } catch (FontFormatException | IOException ex) {
-            titleFont = null;
-        }
+        // Récupération de la fonte personnalisée
+        titleFont = new Font("Retro Flower", Font.PLAIN, 96);
         titleLabel = new JLabel(title, SwingConstants.CENTER);
         initGui();
     }

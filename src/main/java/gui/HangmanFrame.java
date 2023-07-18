@@ -1,6 +1,8 @@
 package gui;
 
+import configuration.GameConstants;
 import java.awt.CardLayout;
+import java.awt.GraphicsEnvironment;
 import java.awt.HeadlessException;
 import javax.swing.JFrame;
 import javax.swing.JMenuBar;
@@ -19,6 +21,16 @@ public class HangmanFrame extends JFrame {
     private final JPanel content;
     private final JPanel home, hof, game;
     private final JMenuBar menubar;
+
+    static { // Ce code s'exécute AVANT le constructeur
+        // Récupération de l'environnement graphique de programme
+        GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+        // Ajout de la fonte personnalisée (créée dans les constantes du jeu)
+        // à l'interface graphique, donc valide pour TOUT le jeu
+        ge.registerFont(GameConstants.GAME_FONT);
+        // La fonte est maintenant utilisable avec un new Font("retro flower"...)
+        // dans tout le projet
+    }
 
     public HangmanFrame() throws HeadlessException {
         super("Jouons au pendu");
