@@ -1,6 +1,7 @@
 package gui;
 
 import configuration.GameConstants;
+import configuration.Helpers;
 import java.awt.CardLayout;
 import java.awt.GraphicsEnvironment;
 import java.awt.HeadlessException;
@@ -36,6 +37,7 @@ public class HangmanFrame extends JFrame {
         ge.registerFont(GameConstants.GAME_FONT);
         // La fonte est maintenant utilisable avec un new Font("retro flower"...)
         // dans tout le projet
+        Helpers.activateDB();
     }
 
     public HangmanFrame() throws HeadlessException {
