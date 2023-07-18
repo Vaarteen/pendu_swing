@@ -98,8 +98,8 @@ public class Word extends Bean {
     private String initializeRandomWordFromFile(String fileName) {
         String word = null;
         Path filePath = Paths.get(fileName);
-        List<String> words;
         try {
+            List<String> words;
             words = Files.readAllLines(filePath);
             Random rd = new Random();
             word = words.get(rd.nextInt(words.size()));
@@ -111,9 +111,13 @@ public class Word extends Bean {
     }
 
     private String initializeRandomWordFromDb(String dbName) {
-        String word = null;
-        Path filename = Paths.get(dbName);
-        word = DAOFactory.getWordDao().getRandomWord().getWord();
+        String word;
+        Path dbPath = Paths.get(dbName);
+        if (Files.isReadable(dbPath)) {
+            word = DAOFactory.getWordDao().getRandomWord().getWord();
+        } else {
+            word = initializeRandomWordFromArray();
+        }
         return word;
     }
 

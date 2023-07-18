@@ -1,7 +1,11 @@
 package configuration;
 
+import dao.DAOFactory;
 import dao.SQLiteConnection;
+import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -45,7 +49,9 @@ public class Helpers {
 
     private static void createDB() {
         try {
+            // Récupération de la connexion
             Connection conn = SQLiteConnection.getInstance();
+            // Création des tables
             String req = "CREATE TABLE IF NOT EXISTS user ("
                     + "id_user integer PRIMARY KEY,"
                     + "name text NOT NULL,"
@@ -64,12 +70,24 @@ public class Helpers {
                     + "PRIMARY KEY (id_user, id_dictionnary)"
                     + ");";
             stmt.execute(req);
+            // Ajout des données dans la table user
             req = "INSERT INTO user (name, score) VALUES "
                     + "('admin', 0), ('Alf', 5), ('Sophie', 6);";
             stmt.execute(req);
-            req = "INSERT INTO dictionnary (word) VALUES "
-                    + "('PARAPLUIE'), ('VOITURE');";
-            stmt.execute(req);
+            // Ajout des données dans la table word à partir du fichier
+            // dictionnaire s'il existe, en dur sinon
+            try (BufferedReader br = new BufferedReader(
+                    new InputStreamReader(Hangman.class
+                            .getResourceAsStream("/configuration/dictionary.dat")))) {
+                String word;
+                while ((word = br.readLine()) != null) {
+                    DAOFactory.getWordDao().create(word);
+                }
+            } catch (IOException ex) { // Dictionniare non trouvé
+                req = "INSERT INTO dictionnary (word) VALUES "
+                        + "('PARAPLUIE'), ('VOITURE');";
+                stmt.execute(req);
+            }
         } catch (SQLException ex) {
             Logger.getLogger(Helpers.class.getName()).log(Level.SEVERE, null, ex);
             System.exit(1);
