@@ -4,6 +4,8 @@ import configuration.GameConstants;
 import java.awt.CardLayout;
 import java.awt.GraphicsEnvironment;
 import java.awt.HeadlessException;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import javax.swing.JFrame;
 import javax.swing.JMenuBar;
 import javax.swing.JPanel;
@@ -53,6 +55,13 @@ public class HangmanFrame extends JFrame {
         content.add(home, HOMEPANEL);
         content.add(hof, HOFPANEL);
         content.add(game, GAMEPANEL);
+        // Mise à jour du hall of fame lors de son affichage
+        hof.addComponentListener(new ComponentAdapter() {
+            @Override
+            public void componentShown(ComponentEvent e) {
+                hof.showList();
+            }
+        });
         setContentPane(content);
         setJMenuBar(menubar);
     }

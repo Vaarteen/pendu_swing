@@ -60,6 +60,8 @@ public class HallOfFamePanel extends HangmanPanel {
             // On ajoute la panl à la liste
             listPanel.add(userPanel);
         }
-        this.repaint();
+        // On réaffiche le composant
+        validate();
+        repaint();
     }
 }
