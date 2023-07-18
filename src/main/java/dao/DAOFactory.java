@@ -9,6 +9,7 @@ package dao;
 public final class DAOFactory {
 
     private static UserDao userDao;
+    private static WordDao wordDao;
 
     private DAOFactory() {
     }
@@ -23,5 +24,12 @@ public final class DAOFactory {
             userDao = new UserDao();
         }
         return userDao;
+    }
+
+    public static final WordDao getWordDao() {
+        if (wordDao == null) {
+            wordDao = new WordDao();
+        }
+        return wordDao;
     }
 }

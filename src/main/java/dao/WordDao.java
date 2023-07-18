@@ -8,17 +8,21 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import models.User;
+import models.Word;
 
-public class UserDao extends DAO<User> {
+/**
+ *
+ * @author Herbert Caffarel
+ */
+public class WordDao extends DAO<Word> {
 
-    public UserDao() {
-        super("user");
+    public WordDao() {
+        super("word");
     }
 
     @Override
-    public User getById(Integer id) {
-        User user = null;
+    public Word getById(Integer id) {
+        Word word = null;
         String sql = "SELECT * FROM "
                 + table
                 + " WHERE id_" + table + "=?";
@@ -27,31 +31,28 @@ public class UserDao extends DAO<User> {
             pstmt.setInt(1, id);
             ResultSet rs = pstmt.executeQuery();
             if (rs.first()) {
-                user = new User(
+                word = new Word(
                         rs.getInt("id_" + table),
-                        rs.getString("name"),
-                        rs.getInt("score")
+                        rs.getString("word")
                 );
             }
         } catch (SQLException ex) {
-            Logger.getLogger(UserDao.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(WordDao.class.getName()).log(Level.SEVERE, null, ex);
         }
-        return user;
+        return word;
     }
 
     @Override
-    public void create(User object) {
+    public void create(Word object) {
         String sql = "INSERT INTO "
                 + table
-                + " (name, score) VALUES (?, ?)";
+                + " (word) VALUES (?)";
         try {
             PreparedStatement pstmt = conn.prepareStatement(
                     sql,
                     PreparedStatement.RETURN_GENERATED_KEYS
             );
-            pstmt.setString(1, object.getName());
-            // On stocke le mot de passe hashé dans la DB !!!
-            pstmt.setInt(2, object.getScore());
+            pstmt.setString(1, object.getWord());
             int lines = pstmt.executeUpdate();
             // On ajoute l'identifiant nouvellement créé à l'objet !
             ResultSet keys = pstmt.getGeneratedKeys();
@@ -59,63 +60,77 @@ public class UserDao extends DAO<User> {
                 object.setId(keys.getInt(1));
             }
         } catch (SQLException ex) {
-            Logger.getLogger(UserDao.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(WordDao.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
     @Override
-    public void update(User object) {
+    public void update(Word object) {
         String sql = "UPDATE "
                 + table
-                + " SET name=?, score=?"
+                + " SET word=?"
                 + " WHERE id_" + table + "=?";
         try {
             PreparedStatement pstmt = conn.prepareStatement(sql);
-            pstmt.setString(1, object.getName());
-            pstmt.setInt(2, object.getScore());
-            pstmt.setInt(3, object.getId());
+            pstmt.setString(1, object.getWord());
+            pstmt.setInt(2, object.getId());
             int lines = pstmt.executeUpdate();
         } catch (SQLException ex) {
-            Logger.getLogger(UserDao.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(WordDao.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
     @Override
-    public List<User> getAll() {
-        List<User> users = new ArrayList<>();
+    public List<Word> getAll() {
+        List<Word> words = new ArrayList<>();
         String sql = "SELECT * FROM " + table;
         try {
             Statement stmt = conn.createStatement();
             ResultSet rs = stmt.executeQuery(sql);
             while (rs.next()) {
-                users.add(new User(
+                words.add(new Word(
                         rs.getInt("id_" + table),
-                        rs.getString("name"),
-                        rs.getInt("score")
+                        rs.getString("word")
                 ));
             }
         } catch (SQLException ex) {
             Logger.getLogger(UserDao.class.getName()).log(Level.SEVERE, null, ex);
         }
-        return users;
+        return words;
     }
 
-    public List<User> getHallOfFame() {
-        List<User> users = new ArrayList<>();
-        String sql = "SELECT * FROM " + table + " ORDER BY score DESC LIMIT 10";
+    public Word getRandomWord() {
+        Word word = null;
+        String sql = "SELECT * FROM "
+                + table
+                + " ORDER BY RANDOM() LIMIT 1";
         try {
-            Statement stmt = conn.createStatement();
-            ResultSet rs = stmt.executeQuery(sql);
+            PreparedStatement pstmt = conn.prepareStatement(sql);
+            ResultSet rs = pstmt.executeQuery();
+            // la méthode first() n'est pas supportée par SQLite !!!
             while (rs.next()) {
-                users.add(new User(
+                word = new Word(
                         rs.getInt("id_" + table),
-                        rs.getString("name"),
-                        rs.getInt("score")
-                ));
+                        rs.getString("word")
+                );
             }
         } catch (SQLException ex) {
-            Logger.getLogger(UserDao.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(WordDao.class.getName()).log(Level.SEVERE, null, ex);
         }
-        return users;
+        return word;
     }
+
+    public void create(String word) {
+        String sql = "INSERT INTO "
+                + table
+                + " (word) VALUES (?)";
+        try {
+            PreparedStatement pstmt = conn.prepareStatement(sql);
+            pstmt.setString(1, word);
+            int lines = pstmt.executeUpdate();
+        } catch (SQLException ex) {
+            Logger.getLogger(WordDao.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
 }
