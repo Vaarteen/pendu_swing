@@ -101,13 +101,14 @@ public class WordDao extends DAO<Word> {
 
     public Word getRandomWord() {
         Word word = null;
-        String sql = "SELECT word FROM "
+        String sql = "SELECT * FROM "
                 + table
                 + " ORDER BY RANDOM() LIMIT 1";
         try {
             PreparedStatement pstmt = conn.prepareStatement(sql);
             ResultSet rs = pstmt.executeQuery();
-            if (rs.first()) {
+            // la méthode first() n'est pas supportée par SQLite !!!
+            while (rs.next()) {
                 word = new Word(
                         rs.getInt("id_" + table),
                         rs.getString("word")

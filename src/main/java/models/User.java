@@ -14,6 +14,7 @@ public class User extends Bean {
 
     public User(String name) {
         this.name = name;
+        this.score = 0;
     }
 
     public User(String name, int score) {
@@ -22,6 +23,7 @@ public class User extends Bean {
     }
 
     public User(int id_user, String name, int score) {
+        this.id = id_user;
         this.name = name;
         this.score = score;
     }

@@ -7,7 +7,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
 import models.Playable;
-import models.Word;
+import models.WordManager;
 
 /**
  *
@@ -17,22 +17,17 @@ public class Hangman implements Playable {
 
     private final int ERROR_MAX;
     private final Collection<Character> proposedLetters;
-    private final Word word;
+    private final WordManager wordManager;
     private int cnt;
     private int errorCnt;
-    Properties config;
+    private static final Properties config = Helpers.readConfig();
 
     public Hangman() {
-        this.config = Helpers.readConfig();
         this.errorCnt = 0;
         this.cnt = 0;
-        this.word = new Word();
+        this.wordManager = new WordManager();
         this.proposedLetters = new ArrayList<>();
-        this.ERROR_MAX = Integer.parseInt(this.config.getProperty("maxError"));
-    }
-
-    public Word getWord() {
-        return word;
+        this.ERROR_MAX = Integer.parseInt(config.getProperty("maxError"));
     }
 
     public Collection<Character> getProposedLetters() {
@@ -49,9 +44,9 @@ public class Hangman implements Playable {
 
     @Override
     public void play() {
-        word.createShadowedWord(proposedLetters); // Génère le mot masqué
+        wordManager.createShadowedWord(proposedLetters); // Génère le mot masqué
         char proposedLetter; // La lettre proposée par le joueur
-        while (!word.isFound() && (errorCnt < ERROR_MAX)) { // Boucle de jeu
+        while (!wordManager.isFound() && (errorCnt < ERROR_MAX)) { // Boucle de jeu
             // On demande et récupère une lettre
             showKnownLetters();
             proposedLetter = askForLetter();
@@ -63,21 +58,21 @@ public class Hangman implements Playable {
                 cnt++; // On ajoute un coup au compteur
                 // Si le mot à trouver ne contient pas la lettre proposée on
                 // compte une erreur
-                if (!word.contains(proposedLetter)) {
+                if (!wordManager.contains(proposedLetter)) {
                     errorCnt++;
                 }
             }
             // Affichage du mot masqué
-            word.createShadowedWord(proposedLetters);
-            System.out.println(word.getShadowedWord());
+            wordManager.createShadowedWord(proposedLetters);
+            System.out.println(wordManager.getShadowedWord());
             // Affichage du nombre d'erreurs restant
             System.out.println("Il vous reste " + (ERROR_MAX - errorCnt) + " erreurs avant d'être pendu.");
         } // Fin boucle du jeu
-        if (word.isFound()) {
+        if (wordManager.isFound()) {
             System.out.println("Bravo, vous avez trouvé mon mot en " + cnt + " coups.");
         } else {
             System.out.println("COUIC !");
-            System.out.println("Le mot à trouver était : " + this.word.getWord());
+            System.out.println("Le mot à trouver était : " + this.wordManager.getWord());
         }
     }
 

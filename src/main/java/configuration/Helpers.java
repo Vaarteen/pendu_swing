@@ -6,6 +6,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -15,7 +16,6 @@ import java.sql.Statement;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import pendu.Hangman;
 
 /**
  *
@@ -25,8 +25,8 @@ public class Helpers {
 
     public static final Properties readConfig() {
         Properties config = new Properties();
-        try (InputStream in = Hangman.class
-                .getResourceAsStream("/configuration/config.properties")) {
+        try (InputStream in = Helpers.class
+                .getResourceAsStream("/config.properties")) {
             config.load(in);
         } catch (Exception ex) {
             System.err.println("Fichier de configuration introuvable. Application des paramètres par défaut.");
@@ -59,15 +59,15 @@ public class Helpers {
                     + ");";
             Statement stmt = conn.createStatement();
             stmt.execute(req);
-            req = "CREATE TABLE IF NOT EXISTS dictionnary ("
-                    + "id_dictionnary integer PRIMARY KEY,"
+            req = "CREATE TABLE IF NOT EXISTS word ("
+                    + "id_word integer PRIMARY KEY,"
                     + "word text NOT NULL"
                     + ");";
             stmt.execute(req);
             req = "CREATE TABLE IF NOT EXISTS word_by_user ("
                     + "id_user integer,"
-                    + "id_dictionnary integer,"
-                    + "PRIMARY KEY (id_user, id_dictionnary)"
+                    + "id_word integer,"
+                    + "PRIMARY KEY (id_user, id_word)"
                     + ");";
             stmt.execute(req);
             // Ajout des données dans la table user
@@ -76,15 +76,19 @@ public class Helpers {
             stmt.execute(req);
             // Ajout des données dans la table word à partir du fichier
             // dictionnaire s'il existe, en dur sinon
-            try (BufferedReader br = new BufferedReader(
-                    new InputStreamReader(Hangman.class
-                            .getResourceAsStream("/configuration/dictionary.dat")))) {
+            try {
+                InputStream is = Helpers.class
+                        .getResourceAsStream("/dictionary.dat");
+                // Préciser qu'on lit en UTF-8, sinon on aura des problèmes d'encodage.
+                // Par défaut Java lit les fichiers texte en ISO 8859-1
+                InputStreamReader isr = new InputStreamReader(is, StandardCharsets.UTF_8);
+                BufferedReader br = new BufferedReader(isr);
                 String word;
                 while ((word = br.readLine()) != null) {
                     DAOFactory.getWordDao().create(word);
                 }
             } catch (IOException ex) { // Dictionniare non trouvé
-                req = "INSERT INTO dictionnary (word) VALUES "
+                req = "INSERT INTO word (word) VALUES "
                         + "('PARAPLUIE'), ('VOITURE');";
                 stmt.execute(req);
             }
