@@ -19,7 +19,9 @@ public class HangmanFrame extends JFrame {
     private static final String GAMEPANEL = "game";
 
     private final JPanel content;
-    private final JPanel home, hof, game;
+    private final HomePanel home;
+    private final HallOfFamePanel hof;
+    private final GamePanel game;
     private final JMenuBar menubar;
 
     static { // Ce code s'exécute AVANT le constructeur
@@ -55,15 +57,15 @@ public class HangmanFrame extends JFrame {
         setJMenuBar(menubar);
     }
 
-    public JPanel getHome() {
+    public HomePanel getHome() {
         return home;
     }
 
-    public JPanel getHof() {
+    public HallOfFamePanel getHof() {
         return hof;
     }
 
-    public JPanel getGame() {
+    public GamePanel getGame() {
         return game;
     }
 

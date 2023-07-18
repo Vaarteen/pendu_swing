@@ -22,6 +22,11 @@ public class MainClass {
      */
     public static void main(String[] args) {
         HangmanFrame hangman = new HangmanFrame();
+
+        hangman.getHof().showList();
+        hangman.getHof().showList();
+        hangman.getHof().showList();
+        hangman.getHof().showList();
 //        Hangman pendu = new Hangman();
 //        pendu.play();
     }
