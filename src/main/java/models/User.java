@@ -48,7 +48,7 @@ public class User extends Bean {
         sb.append(name);
         sb.append(" (").append(score);
         sb.append(" point");
-        sb.append((score > 1) ? 's' : "");
+        sb.append((score > 1) ? "s)" : ")");
         return sb.toString();
     }
 

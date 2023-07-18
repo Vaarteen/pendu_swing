@@ -77,7 +77,7 @@ public class Hangman implements Playable {
             System.out.println("Bravo, vous avez trouvé mon mot en " + cnt + " coups.");
         } else {
             System.out.println("COUIC !");
-            System.out.println("Le mot à trouver était : " + this.word.getWordToFind());
+            System.out.println("Le mot à trouver était : " + this.word.getWord());
         }
     }
 
