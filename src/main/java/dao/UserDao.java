@@ -26,7 +26,7 @@ public class UserDao extends DAO<User> {
             PreparedStatement pstmt = conn.prepareStatement(sql);
             pstmt.setInt(1, id);
             ResultSet rs = pstmt.executeQuery();
-            if (rs.first()) {
+            if (rs.next()) { // SQLite ne supporte pas first()
                 user = new User(
                         rs.getInt("id_" + table),
                         rs.getString("name"),
@@ -83,7 +83,8 @@ public class UserDao extends DAO<User> {
     @Override
     public List<User> getAll() {
         List<User> users = new ArrayList<>();
-        String sql = "SELECT * FROM " + table;
+        String sql = "SELECT * FROM " + table
+                + " WHERE id_" + table + " <> 1";
         try {
             Statement stmt = conn.createStatement();
             ResultSet rs = stmt.executeQuery(sql);
@@ -102,7 +103,8 @@ public class UserDao extends DAO<User> {
 
     public List<User> getHallOfFame() {
         List<User> users = new ArrayList<>();
-        String sql = "SELECT * FROM " + table + " ORDER BY score DESC LIMIT 10";
+        String sql = "SELECT * FROM " + table
+                + " WHERE id_" + table + " <> 1 ORDER BY score DESC LIMIT 10";
         try {
             Statement stmt = conn.createStatement();
             ResultSet rs = stmt.executeQuery(sql);
@@ -117,5 +119,47 @@ public class UserDao extends DAO<User> {
             Logger.getLogger(UserDao.class.getName()).log(Level.SEVERE, null, ex);
         }
         return users;
+    }
+
+    public List<User> getAllByName() {
+        List<User> users = new ArrayList<>();
+        String sql = "SELECT * FROM " + table
+                + " WHERE id_" + table + " <> 1 ORDER BY name ASC";
+        try {
+            Statement stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery(sql);
+            while (rs.next()) {
+                users.add(new User(
+                        rs.getInt("id_" + table),
+                        rs.getString("name"),
+                        rs.getInt("score")
+                ));
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(UserDao.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return users;
+    }
+
+    public User getByName(String name) {
+        User user = null;
+        String sql = "SELECT * FROM "
+                + table
+                + " WHERE name=?";
+        try {
+            PreparedStatement pstmt = conn.prepareStatement(sql);
+            pstmt.setString(1, name);
+            ResultSet rs = pstmt.executeQuery();
+            if (rs.next()) { // SQLite ne supporte pas first()
+                user = new User(
+                        rs.getInt("id_" + table),
+                        rs.getString("name"),
+                        rs.getInt("score")
+                );
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(UserDao.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return user;
     }
 }

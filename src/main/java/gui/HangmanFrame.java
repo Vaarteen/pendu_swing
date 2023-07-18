@@ -9,6 +9,7 @@ import java.awt.event.ComponentEvent;
 import javax.swing.JFrame;
 import javax.swing.JMenuBar;
 import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
 
 /**
  *
@@ -25,6 +26,7 @@ public class HangmanFrame extends JFrame {
     private final HallOfFamePanel hof;
     private final GamePanel game;
     private final JMenuBar menubar;
+    private final CardLayout cardLayout;
 
     static { // Ce code s'exécute AVANT le constructeur
         // Récupération de l'environnement graphique de programme
@@ -38,7 +40,8 @@ public class HangmanFrame extends JFrame {
 
     public HangmanFrame() throws HeadlessException {
         super("Jouons au pendu");
-        content = new JPanel();
+        cardLayout = new CardLayout();
+        content = new JPanel(cardLayout);
         home = new HomePanel();
         hof = new HallOfFamePanel();
         game = new GamePanel();
@@ -47,11 +50,16 @@ public class HangmanFrame extends JFrame {
         setDefaultCloseOperation(DISPOSE_ON_CLOSE); // Fermeture du programme
         pack(); // Dimensionnement auto de la fenêtre
         setLocationRelativeTo(null); // Centrage de la fenêtre
-        setVisible(true); // Affichage de la fenêtre
+        // Affichage de la fenêtre dans un thread séparé car Swing n'est pas
+        // thread safe, il est mieux de le lancer dans son propre thread
+        SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                setVisible(true);
+            }
+        });
     }
 
     private void initGui() {
-        content.setLayout(new CardLayout());
         content.add(home, HOMEPANEL);
         content.add(hof, HOFPANEL);
         content.add(game, GAMEPANEL);
@@ -62,6 +70,7 @@ public class HangmanFrame extends JFrame {
                 hof.showList();
             }
         });
+
         setContentPane(content);
         setJMenuBar(menubar);
     }
@@ -76,6 +85,14 @@ public class HangmanFrame extends JFrame {
 
     public GamePanel getGame() {
         return game;
+    }
+
+    public JPanel getContent() {
+        return content;
+    }
+
+    public CardLayout getCardLayout() {
+        return cardLayout;
     }
 
 }
