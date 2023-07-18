@@ -55,7 +55,7 @@ public class UserDao extends DAO<User> {
             int lines = pstmt.executeUpdate();
             // On ajoute l'identifiant nouvellement créé à l'objet !
             ResultSet keys = pstmt.getGeneratedKeys();
-            if (keys.first()) {
+            if (keys.next()) { // SQLite ne supporte pas first()
                 object.setId(keys.getInt(1));
             }
         } catch (SQLException ex) {
