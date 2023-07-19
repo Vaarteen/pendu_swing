@@ -154,7 +154,7 @@ public class GamePanel extends HangmanPanel {
         checkReplay();
     }
 
-    private void newGame() {
+    public void newGame() {
         game.newGame();
         setKeyboardActivation(true);
         update();
