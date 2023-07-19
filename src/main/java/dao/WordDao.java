@@ -30,7 +30,7 @@ public class WordDao extends DAO<Word> {
             PreparedStatement pstmt = conn.prepareStatement(sql);
             pstmt.setInt(1, id);
             ResultSet rs = pstmt.executeQuery();
-            if (rs.first()) {
+            if (rs.next()) { // SQLite ne supporte pas first()
                 word = new Word(
                         rs.getInt("id_" + table),
                         rs.getString("word")
@@ -56,7 +56,7 @@ public class WordDao extends DAO<Word> {
             int lines = pstmt.executeUpdate();
             // On ajoute l'identifiant nouvellement créé à l'objet !
             ResultSet keys = pstmt.getGeneratedKeys();
-            if (keys.first()) {
+            if (keys.next()) { // SQLite ne supporte pas first()
                 object.setId(keys.getInt(1));
             }
         } catch (SQLException ex) {
@@ -107,8 +107,7 @@ public class WordDao extends DAO<Word> {
         try {
             PreparedStatement pstmt = conn.prepareStatement(sql);
             ResultSet rs = pstmt.executeQuery();
-            // la méthode first() n'est pas supportée par SQLite !!!
-            while (rs.next()) {
+            while (rs.next()) { // SQLite ne supporte pas first()
                 word = new Word(
                         rs.getInt("id_" + table),
                         rs.getString("word")
