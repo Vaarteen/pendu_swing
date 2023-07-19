@@ -14,6 +14,8 @@ import javax.swing.SwingConstants;
  */
 public class HangmanPanel extends JPanel {
 
+    private static final long serialVersionUID = 1L;
+
     protected final HangmanFrame frame;
     protected final BorderLayout layout;
     protected final String title;

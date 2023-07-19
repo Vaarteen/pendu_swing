@@ -13,9 +13,11 @@ import models.User;
 
 public class HallOfFamePanel extends HangmanPanel {
 
+    private static final long serialVersionUID = 1L;
+
     private final Box listPanel;
     private final Font firstRankFont, secondRankFont, thirdRankFont, otherRankFont;
-    private List<User> users;
+    private transient List<User> users;
 
     public HallOfFamePanel(HangmanFrame frame) {
         super("Hall of Fame", frame);

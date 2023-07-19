@@ -2,10 +2,10 @@ package gui;
 
 import dao.DAOFactory;
 import java.awt.BorderLayout;
-import java.awt.CardLayout;
 import java.awt.Color;
 import java.awt.FlowLayout;
-import java.awt.Font;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.image.BufferedImage;
@@ -16,7 +16,6 @@ import javax.imageio.ImageIO;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.ImageIcon;
-import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -25,26 +24,23 @@ import models.User;
 
 public class HomePanel extends HangmanPanel {
 
+    private static final long serialVersionUID = 1L;
+
     private final JPanel content, // Le panneau principal
-            buttons, // Le panneau des boutons
             usersDropdownPanel; // Le paneau qui contient le dropdown de sélection du joueur
     private final Box playerSelection; // Le panel du choix du joueur
-    private final JLabel playerSelectionLabel;
-    private final JButton play, hof;
-    private final JComboBox usersDropdown;
-    private User player;
+    private final CenteredGameLabel playerSelectionLabel;
+    private final JComboBox playersDropdown;
+    private final transient UsersDropdownListener udl;
 
     public HomePanel(HangmanFrame frame) {
         super("Accueil", frame);
-        player = frame.getPlayer();
         content = new JPanel(new BorderLayout());
-        buttons = new JPanel(new FlowLayout(FlowLayout.CENTER));
         playerSelection = Box.createVerticalBox();
-        playerSelectionLabel = new JLabel("Qui joue ?");
-        usersDropdown = new JComboBox();
+        playerSelectionLabel = new CenteredGameLabel("Qui joue ?");
+        playersDropdown = new JComboBox();
         usersDropdownPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-        play = new JButton("Jouer");
-        hof = new JButton("Hall of Fame");
+        udl = new UsersDropdownListener();
         initGui();
     }
 
@@ -59,67 +55,68 @@ public class HomePanel extends HangmanPanel {
             Logger.getLogger(HomePanel.class.getName()).log(Level.SEVERE, null, ex);
         }
         // Les joueurs
-        fillUsers();
-        usersDropdown.setEditable(true);
-        usersDropdown.addItemListener(new UsersDropdownListener());
-        playerSelectionLabel.setFont(new Font("Retro Flower", Font.ITALIC | Font.BOLD, 48));
-        playerSelectionLabel.setForeground(Color.GREEN);
-        playerSelectionLabel.setBorder(BorderFactory.createEmptyBorder(5, 15, 5, 15));
+        playersDropdown.setEditable(true);
+        playerSelectionLabel.getLabel().setForeground(Color.GREEN);
+        playerSelectionLabel.getLabel().setBorder(BorderFactory.createEmptyBorder(5, 15, 5, 15));
         playerSelection.add(playerSelectionLabel);
-        usersDropdownPanel.add(usersDropdown);
+        usersDropdownPanel.add(playersDropdown);
         playerSelection.add(usersDropdownPanel);
-        // Les boutons
-        play.setEnabled(false); // Inaccessible tant qu'on n'a pas choisi de joueur
-        play.addActionListener(
-                (e) -> {
-                    if (player != null) {
-                        CardLayout cl = frame.getCardLayout();
-                        cl.show(frame.getContent(), "game");
-                    } else {
-                        JOptionPane.showMessageDialog(frame, "Vous devez choisir un joueur d'abord !");
-                    }
-                }
-        );
-        hof.addActionListener(
-                (e) -> {
-                    CardLayout cl = frame.getCardLayout();
-                    cl.show(frame.getContent(), "hof");
-                }
-        );
-        buttons.add(play);
-        buttons.add(hof);
-
         // Ajout des panels au content
         add(playerSelection, BorderLayout.EAST);
         add(content, BorderLayout.CENTER);
-        add(buttons, BorderLayout.SOUTH);
+        initEvents();
     }
 
+    private void initEvents() {
+        //  l'affichage de la card on met à jour la liste des joueurs
+        addComponentListener(new ComponentAdapter() {
+            @Override
+            public void componentShown(ComponentEvent e) {
+                fillUsers();
+            }
+
+        });
+    }
+
+    @SuppressWarnings({"BoxedValueEquality", "NumberEquality"})
     private void fillUsers() {
-        usersDropdown.removeAllItems();
-        usersDropdown.addItem("");
-        for (User user : DAOFactory.getUserDao().getAllByName()) {
-            usersDropdown.addItem(user);
+        playersDropdown.removeItemListener(udl);
+        playersDropdown.removeAllItems();
+        playersDropdown.addItem("");
+        for (User player : DAOFactory.getUserDao().getAllByName()) {
+            playersDropdown.addItem(player);
+            if (frame.getPlayer() != null && frame.getPlayer().getId() == player.getId()) {
+                frame.setPlayer(player);
+            }
         }
+        playersDropdown.setSelectedItem(frame.getPlayer());
+        playersDropdown.addItemListener(udl);
+    }
+
+    private void activatePlayer(User player) {
+        frame.setPlayer(player);
+        fillUsers();
+        frame.setPlayer(player);
     }
 
     private class UsersDropdownListener implements ItemListener {
 
         @Override
         public void itemStateChanged(ItemEvent e) {
+            User player;
             // Sur désélection on ne fait rien
             if (e.getStateChange() == ItemEvent.DESELECTED) {
                 return;
             }
             // Sur sélection on teste
-            if (usersDropdown.getSelectedItem() instanceof User) { // Joueur pris dans la liste
-                player = (User) usersDropdown.getSelectedItem(); // On récupère l'utilisateur
+            if (playersDropdown.getSelectedItem() instanceof User) { // Joueur pris dans la liste
+                player = (User) playersDropdown.getSelectedItem(); // On récupère l'utilisateur
             } else {
                 // Sinon c'est une valeur (String) entrée par l'utilisateur
                 // On vérifie si ce nom existe déjà dans la DB auquel cas on
                 // demande confirmation pour le prendre... et on recommence jusqu'à
                 // être dans un état acceptable
-                String userName = (String) usersDropdown.getSelectedItem();
+                String userName = (String) playersDropdown.getSelectedItem();
                 boolean playerOk = false;
                 do {
                     player = DAOFactory.getUserDao().getByName(userName);
@@ -141,11 +138,6 @@ public class HomePanel extends HangmanPanel {
                 } while (!playerOk); // Jusqu'à avoir un joueur valide
             }
             activatePlayer(player);
-        }
-
-        private void activatePlayer(User player) {
-            frame.setPlayer(player);
-            play.setEnabled(true);
         }
     }
 }

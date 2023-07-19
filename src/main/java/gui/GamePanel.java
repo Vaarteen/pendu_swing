@@ -23,8 +23,10 @@ import models.WordManager;
 
 public class GamePanel extends HangmanPanel {
 
-    private final Hangman game;
-    private final WordManager wm;
+    private static final long serialVersionUID = 1L;
+
+    private transient final Hangman game;
+    private transient final WordManager wm;
     private final Box searchArea;
     private final JPanel wordPanel, lettersPanel, keyboardPanel;
     private final CenteredGameLabel imageLabel,// L'image de la pendaison

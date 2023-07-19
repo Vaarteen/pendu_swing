@@ -12,6 +12,7 @@ import javax.swing.JPanel;
  */
 public class CenteredGameLabel extends JPanel {
 
+    private static final long serialVersionUID = 1L;
     private static final Font FONT = new Font("retro flower", Font.BOLD, 36);
 
     private final JLabel label;
@@ -34,6 +35,10 @@ public class CenteredGameLabel extends JPanel {
 
     void setIcon(Icon icon) {
         label.setIcon(icon);
+    }
+
+    public JLabel getLabel() {
+        return label;
     }
 
 }
