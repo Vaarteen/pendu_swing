@@ -132,4 +132,25 @@ public class WordDao extends DAO<Word> {
         }
     }
 
+    public Word getByWord(String word) {
+        Word retValue = null;
+        String sql = "SELECT * FROM "
+                + table
+                + " WHERE word=?";
+        try {
+            PreparedStatement pstmt = conn.prepareStatement(sql);
+            pstmt.setString(1, word);
+            ResultSet rs = pstmt.executeQuery();
+            if (rs.next()) { // SQLite ne supporte pas first()
+                retValue = new Word(
+                        rs.getInt("id_" + table),
+                        rs.getString("word")
+                );
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(WordDao.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return retValue;
+    }
+
 }
