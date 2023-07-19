@@ -23,6 +23,7 @@ import models.User;
  */
 public class HangmanFrame extends JFrame {
 
+    private static final long serialVersionUID = 1L;
     public static final String HOMEPANEL = "home";
     public static final String HOFPANEL = "hof";
     public static final String GAMEPANEL = "game";
@@ -34,7 +35,7 @@ public class HangmanFrame extends JFrame {
     private final JMenuBar menubar;
     private final CardLayout cardLayout;
     private final JButton homeBtn, hofBtn, gameBtn;
-    private User player;
+    private transient User player;
 
     static { // Ce code s'exécute AVANT le constructeur
         // Récupération de l'environnement graphique de programme
@@ -65,11 +66,9 @@ public class HangmanFrame extends JFrame {
         setLocationRelativeTo(null); // Centrage de la fenêtre
         // Affichage de la fenêtre dans un thread séparé car Swing n'est pas
         // thread safe, il est mieux de le lancer dans son propre thread
-        SwingUtilities.invokeLater(new Runnable() {
-            public void run() {
-                setVisible(true);
-                cardLayout.show(content, HOMEPANEL);
-            }
+        SwingUtilities.invokeLater(() -> {
+            setVisible(true);
+            cardLayout.show(content, HOMEPANEL);
         });
     }
 

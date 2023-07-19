@@ -24,12 +24,14 @@ import models.User;
 
 public class HomePanel extends HangmanPanel {
 
+    private static final long serialVersionUID = 1L;
+
     private final JPanel content, // Le panneau principal
             usersDropdownPanel; // Le paneau qui contient le dropdown de sélection du joueur
     private final Box playerSelection; // Le panel du choix du joueur
     private final CenteredGameLabel playerSelectionLabel;
     private final JComboBox playersDropdown;
-    private final UsersDropdownListener udl;
+    private final transient UsersDropdownListener udl;
 
     public HomePanel(HangmanFrame frame) {
         super("Accueil", frame);
@@ -76,6 +78,7 @@ public class HomePanel extends HangmanPanel {
         });
     }
 
+    @SuppressWarnings({"BoxedValueEquality", "NumberEquality"})
     private void fillUsers() {
         playersDropdown.removeItemListener(udl);
         playersDropdown.removeAllItems();

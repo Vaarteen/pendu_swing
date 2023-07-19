@@ -11,6 +11,8 @@ import javax.swing.KeyStroke;
 
 public class HangmanMenubar extends JMenuBar {
 
+    private static final long serialVersionUID = 1L;
+
     private final JPanel parent;
     private final JMenu windows;
     private final JMenuItem home;
