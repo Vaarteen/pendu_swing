@@ -1,4 +1,4 @@
-package pendu;
+package models;
 
 import configuration.Helpers;
 import java.util.ArrayList;
@@ -6,8 +6,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
-import models.Playable;
-import models.WordManager;
 
 /**
  *
@@ -21,6 +19,7 @@ public class Hangman implements Playable {
     private int cnt;
     private int errorCnt;
     private static final Properties config = Helpers.readConfig();
+    private boolean gameEnded;
 
     public Hangman() {
         this.errorCnt = 0;
@@ -28,6 +27,7 @@ public class Hangman implements Playable {
         this.wordManager = new WordManager();
         this.proposedLetters = new ArrayList<>();
         this.ERROR_MAX = Integer.parseInt(config.getProperty("maxError"));
+        this.gameEnded = false;
     }
 
     public Collection<Character> getProposedLetters() {
@@ -42,9 +42,17 @@ public class Hangman implements Playable {
         return errorCnt;
     }
 
+    public WordManager getWordManager() {
+        return wordManager;
+    }
+
+    public boolean isGameEnded() {
+        return gameEnded;
+    }
+
     @Override
     public void play() {
-        wordManager.createShadowedWord(proposedLetters); // Génère le mot masqué
+        wordManager.getShadowedWord(proposedLetters); // Génère le mot masqué
         char proposedLetter; // La lettre proposée par le joueur
         while (!wordManager.isFound() && (errorCnt < ERROR_MAX)) { // Boucle de jeu
             // On demande et récupère une lettre
@@ -63,8 +71,7 @@ public class Hangman implements Playable {
                 }
             }
             // Affichage du mot masqué
-            wordManager.createShadowedWord(proposedLetters);
-            System.out.println(wordManager.getShadowedWord());
+            System.out.println(wordManager.getShadowedWord(proposedLetters));
             // Affichage du nombre d'erreurs restant
             System.out.println("Il vous reste " + (ERROR_MAX - errorCnt) + " erreurs avant d'être pendu.");
         } // Fin boucle du jeu
@@ -94,6 +101,43 @@ public class Hangman implements Playable {
             c = sc.next().toUpperCase().charAt(0);
         } while ((c < 'A') || (c > 'Z'));
         return c;
+    }
+
+    public void proposeLetter(char letter) {
+        if (!proposedLetters.contains(letter)) { // sinon on ajoute la lettre à la collection et on la traite
+            proposedLetters.add(letter); // Ajout à la collection
+            cnt++; // On ajoute un coup au compteur
+            // Si le mot à trouver ne contient pas la lettre proposée on
+            // compte une erreur
+            if (!wordManager.contains(letter)) {
+                errorCnt++;
+            }
+        }
+    }
+
+    /**
+     * Retourne l'état du jeu.
+     *
+     * @return 0 : jeu en cours / 1 : jeu gagné / 2 : jeu perdu
+     */
+    public int checkState() {
+        if (errorCnt >= ERROR_MAX) {
+            gameEnded = true;
+            return 2;
+        }
+        if (wordManager.isFound()) {
+            gameEnded = true;
+            return 1;
+        }
+        return 0;
+    }
+
+    public void newGame() {
+        cnt = 0;
+        errorCnt = 0;
+        proposedLetters.clear();
+        wordManager.initializeRandomWord();
+        gameEnded = false;
     }
 
 }

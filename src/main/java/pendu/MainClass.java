@@ -1,5 +1,7 @@
 package pendu;
 
+import gui.HangmanFrame;
+
 /**
  * Ce programme de pendu souffre d'un certain nombre de maux, mais il
  * fonctionne. Le but est de trouver ce qu'on peut améliorer, comment, et
@@ -19,8 +21,7 @@ public class MainClass {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        Hangman pendu = new Hangman();
-        pendu.play();
+        HangmanFrame hangman = new HangmanFrame();
     }
 
 }
