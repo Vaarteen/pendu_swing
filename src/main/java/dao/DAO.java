@@ -10,10 +10,12 @@ import java.util.logging.Logger;
 import models.Bean;
 
 /**
- * Classe mère de DAO. Cette classe fourni les fonctionnalités CRUD de base.
+ * Classe mère de DAO. Cette classe fournit les fonctionnalités CRUD de base.
+ * Elle implémente l'interface Crudable<T> où T est un Bean. Elle fournit aussi
+ * les fonctionnalités standards count et getAll.
  *
  * @author Herbert &lt;herbert.caffarel@ldnr.fr&gt;
- * @param <T>
+ * @param <T> Une classe héritant de Bean.
  */
 public abstract class DAO<T extends Bean> implements Crudable<T> {
 

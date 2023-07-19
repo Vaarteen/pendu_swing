@@ -6,7 +6,9 @@
 package models;
 
 /**
- * Classe mère des beans de base pour DAO.
+ * Classe mère des beans de base pour DAO. Un bean est un objet qui a un
+ * identifiant, qui peut être null si l'ojet n'a pas encore été persisté dans la
+ * DB.
  *
  * @author Herbert &lt;herbert.caffarel@ldnr.fr&gt;
  */

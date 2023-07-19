@@ -11,30 +11,48 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import models.User;
 
+/**
+ * Le panneau visuel du Hall of Fame.
+ *
+ * @author Herbert Caffarel
+ */
 public class HallOfFamePanel extends HangmanPanel {
 
     private static final long serialVersionUID = 1L;
 
-    private final Box listPanel;
-    private final Font firstRankFont, secondRankFont, thirdRankFont, otherRankFont;
-    private transient List<User> users;
+    private final Box listPanel; // L'espace de visualisation de la liste
+    private final Font firstRankFont, // La fonte pour le premier joueur
+            secondRankFont, // La fonte pour le second
+            thirdRankFont, // La fonte pour le troisième
+            otherRankFont; // La fonte pour les autres joueurs
+    private transient List<User> users; // La liste des 10 joueurs
 
     public HallOfFamePanel(HangmanFrame frame) {
         super("Hall of Fame", frame);
+        // Récupérer les 10 premiers
         users = DAOFactory.getUserDao().getHallOfFame();
         listPanel = Box.createVerticalBox();
         firstRankFont = new Font("Retro Flower", Font.ITALIC | Font.BOLD, 48);
         secondRankFont = new Font("Retro Flower", Font.ITALIC | Font.BOLD, 36);
         thirdRankFont = new Font("Retro Flower", Font.ITALIC | Font.BOLD, 24);
         otherRankFont = new Font("Retro Flower", Font.PLAIN, 24);
+        // Organisation du contenu visuel
         initGui();
     }
 
+    /**
+     * Organisation des ojets graphiques dans le panneau.
+     */
     private void initGui() {
+        // Ajouter l'espace de visualisation de la liste dans le panneau
         add(listPanel, BorderLayout.CENTER);
+        // Afficher la liste
         showList();
     }
 
+    /**
+     * Affiche la liste des 10 premiers joueurs par score.
+     */
     public void showList() {
         // On vide le visuel
         listPanel.removeAll();
@@ -44,6 +62,7 @@ public class HallOfFamePanel extends HangmanPanel {
         for (int i = 0; i < users.size(); i++) {
             JPanel userPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
             JLabel userLabel = new JLabel(users.get(i).toString());
+            // Selon le rang on utilise une fonte différente
             switch (i) {
                 case 0:
                     userLabel.setFont(firstRankFont);
@@ -62,7 +81,7 @@ public class HallOfFamePanel extends HangmanPanel {
             // On ajoute la panl à la liste
             listPanel.add(userPanel);
         }
-        // On réaffiche le composant
+        // On réaffiche le composant parce qu'il a été modifié
         validate();
         repaint();
     }

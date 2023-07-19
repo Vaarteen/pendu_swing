@@ -13,28 +13,47 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
+ * Gestionnaire de mot. On ne peut pas utiliser le bean pour gérer le mot, car
+ * le bean est utilisé par la DAO et a une structure imposée et simpliste. On
+ * doit donc l'encapsuler dans un gestionnaire, qui propose toutes les
+ * fonctionnalités inhérentes au mot.
  *
  * @author Herbert
  */
 public class WordManager {
     
-    private Word word;
-    private String shadowedWord;
-    private static final Properties config = Helpers.readConfig();
+    private Word word; // Le mot encapsulé
+    private String shadowedWord; // Le mot masqué
+    private static final Properties config = Helpers.readConfig(); // La configuration du jeu
 
+    /**
+     * Constructeur. Il initialise un nouveau mot automatiquement.
+     */
     public WordManager() {
         this.word = new Word();
         initializeRandomWord();
     }
 
+    /**
+     * Constructeur.
+     *
+     * @param word Le mot encapsulé
+     */
     public WordManager(Word word) {
         this.word = word;
     }
 
+    /* Getters et setters */
     public String getWord() {
         return word.getWord();
     }
 
+    /**
+     * Fournit le mot masqué en fonction des lettres passées en paramètre.
+     *
+     * @param knownLetters Les lettres connues
+     * @return Le mot partiellement masqué
+     */
     public String getShadowedWord(Collection<Character> knownLetters) {
         createShadowedWord(knownLetters);
         return shadowedWord;
@@ -46,26 +65,31 @@ public class WordManager {
     }
 
     /**
-     * Tire un mot au hasard selon la source fournie dans les propriétés.
+     * Tire un mot au hasard selon la source fournie dans les propriétés. Ce
+     * peut être file, database ou array. Si une méthode demandée échoue, on se
+     * rabat dans tous les cas sur la création par tableau codé en dur dans le
+     * programme.
      *
      */
     public void initializeRandomWord() {
         String w = null;
         switch (config.getProperty("wordSource")) {
-            case "file":
+            case "file": // dictionnaire fichier
                 w = initializeRandomWordFromFile(config.getProperty("dictName"));
                 break;
-            case "database":
+            case "database": // dictionnaire DB
                 w = initializeRandomWordFromDb(config.getProperty("dbName"));
                 break;
-            default:
+            default: // Dictionnaire en dur
                 initializeRandomWordFromArray();
         }
+        // Nettoyage et affectation du mot au jeu
         this.word.setWord(cleanWord(w).toUpperCase());
     }
 
     /**
-     * Retourne un mot constitué de lettres et d'étoiles.
+     * Crée le mot masqué constitué de lettres et d'étoiles en fonction des
+     * lettres connues passées en paramètre.
      *
      * @param knownLetters : les lettres connues
      */
@@ -82,40 +106,70 @@ public class WordManager {
         shadowedWord = shadow.toString();
     }
 
+    /**
+     * Indique si le mot a été trouvé ou pas.
+     *
+     * @return true si le mot est trouvé, false sinon
+     */
     public boolean isFound() {
         return !shadowedWord.contains("*");
     }
 
+    /**
+     * Indique si la lettre fournie existe dans le mot.
+     *
+     * @param letter la lettre à trouver dans le mot
+     * @return true si la lettre se trouve dans le mot, false sinon
+     */
     public boolean contains(char letter) {
         return word.getWord().contains(Character.toString(letter));
     }
 
+    /**
+     * Retourne un mot pris au hasard dans le fichier dictionnaire.
+     *
+     * @param fileName Le nom du fichier dictionnaire
+     * @return Un mot tiré au hasard dans le doctionnaire
+     */
     private String initializeRandomWordFromFile(String fileName) {
         String w = null;
         Path filePath = Paths.get(fileName);
         try {
             List<String> words;
+            // On met toutes les lignes du dictionnaire dans la liste
             words = Files.readAllLines(filePath);
             Random rd = new Random();
             w = words.get(rd.nextInt(words.size()));
         } catch (Exception ex) {
+            // Si la lecture du fichier echoue on tire un mot dans le tableau en dur
             Logger.getLogger(WordManager.class.getName()).log(Level.SEVERE, null, ex);
             w = initializeRandomWordFromArray();
         }
         return w;
     }
 
+    /**
+     * Retourne un mot pris au hasard dans la DB dictionnaire.
+     *
+     * @param dbName Le nom de la DB SQLite
+     * @return un mot tiré au hasard dans la DB
+     */
     private String initializeRandomWordFromDb(String dbName) {
         String w;
         try {
             w = DAOFactory.getWordDao().getRandomWord().getWord();
-        } catch (Exception ex) {
+        } catch (Exception ex) { // En cas d'erreur d'accès à la DB on tire dans un tableau en dur
             Logger.getLogger(WordManager.class.getName()).log(Level.SEVERE, null, ex);
             w = initializeRandomWordFromArray();
         }
         return w;
     }
 
+    /**
+     * Retourne un mot pris au hasard dans un tableau en dur.
+     *
+     * @return un mot au hasard
+     */
     private String initializeRandomWordFromArray() {
         String[] words = {"AMELIORATION", "PARAPLUIE", "VOITURE",
             "ECOLE", "MONTAGNE"};
@@ -123,6 +177,12 @@ public class WordManager {
         return words[rd.nextInt(words.length)];
     }
 
+    /**
+     * Nettoie le mot sélectionné pour être utilisable dans le jeu.
+     *
+     * @param word le mot à nettoyer
+     * @return le mot avec les 26 lettres standard
+     */
     private String cleanWord(String word) {
         return word.toLowerCase()
                 .replaceAll("[àâä]", "a")

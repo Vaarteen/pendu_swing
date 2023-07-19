@@ -6,11 +6,14 @@ import java.io.IOException;
 import java.io.InputStream;
 
 /**
+ * Ce fichier contient les constantes utilisables dans le programme. En
+ * particulier, une fonte personnalisée importée d'un fichier de fonte présent
+ * dans le répertoire "resources" du programme.
  *
  * @author Herbert Caffarel
  */
 public class GameConstants {
-    public static Font GAME_FONT;
+    public static Font GAME_FONT; // Une fonte personnalisée
 
     static { // Ce code s'exécute AVANT le constructeur
         // Récupération du fichier de fonte personnalisée

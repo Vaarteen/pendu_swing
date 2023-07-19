@@ -9,6 +9,9 @@ import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 
 /**
+ * Classe mère décrivant une carte à ajouter à l'affichage principal du jeu.
+ * L'intérêt est de systématiser l'affichage de l'entête de la page (le titre)
+ * et de fournir la fonte personnalisée.
  *
  * @author Herbert Caffarel
  */
@@ -16,11 +19,11 @@ public class HangmanPanel extends JPanel {
 
     private static final long serialVersionUID = 1L;
 
-    protected final HangmanFrame frame;
-    protected final BorderLayout layout;
-    protected final String title;
-    protected final JLabel titleLabel;
-    protected Font titleFont;
+    protected final HangmanFrame frame; // La fenêtre parente
+    protected final BorderLayout layout; // gestionnaire de placement
+    protected final String title; // Le titre de la page
+    protected final JLabel titleLabel; // Le label d'affichage du titre
+    protected Font titleFont; // La fonte personnalisée
 
     public HangmanPanel(String title, HangmanFrame frame) {
         this.frame = frame;
@@ -29,9 +32,13 @@ public class HangmanPanel extends JPanel {
         // Récupération de la fonte personnalisée
         titleFont = new Font("Retro Flower", Font.PLAIN, 96);
         titleLabel = new JLabel(title, SwingConstants.CENTER);
+        // Organisation du contenu visuel
         initGui();
     }
 
+    /**
+     * Organisation des ojets graphiques dans le panneau.
+     */
     private void initGui() {
         setLayout(layout);
         titleLabel.setBorder(BorderFactory.createCompoundBorder(

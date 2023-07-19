@@ -8,19 +8,24 @@ import java.util.List;
 import java.util.Properties;
 
 /**
+ * Le moteur du jeu. À noter que sans la console, l'interface Playable devient
+ * caduque, mais je la garde pour l'historique.
  *
  * @author Herbert
  */
 public class Hangman implements Playable {
 
-    private final int ERROR_MAX;
-    private final Collection<Character> proposedLetters;
-    private final WordManager wordManager;
-    private int cnt;
-    private int errorCnt;
-    private static final Properties config = Helpers.readConfig();
-    private boolean gameEnded;
+    private final int ERROR_MAX; // Le nombre d'erreurs acceptables avant perte du jeu
+    private final Collection<Character> proposedLetters; // La liste des lettres déjà prposées
+    private final WordManager wordManager; // Le gestionnaire de Word
+    private int cnt; // Le compteur de coups
+    private int errorCnt; // Le compteur d'erreurs
+    private static final Properties config = Helpers.readConfig(); // La configuration du jeu
+    private boolean gameEnded; // Le jeu est-il fini ?
 
+    /**
+     * Constructeur.
+     */
     public Hangman() {
         this.errorCnt = 0;
         this.cnt = 0;
@@ -30,6 +35,7 @@ public class Hangman implements Playable {
         this.gameEnded = false;
     }
 
+    /* getters et setters */
     public Collection<Character> getProposedLetters() {
         return proposedLetters;
     }
@@ -50,6 +56,9 @@ public class Hangman implements Playable {
         return gameEnded;
     }
 
+    /**
+     * La boucle principale de jeu en console.
+     */
     @Override
     public void play() {
         wordManager.getShadowedWord(proposedLetters); // Génère le mot masqué
@@ -83,6 +92,9 @@ public class Hangman implements Playable {
         }
     }
 
+    /**
+     * Affiche la liste des lettres déjà proposées pour le jeu en console.
+     */
     public void showKnownLetters() {
         System.out.print("Voici la liste des lettres que vous avez déjà proposées : ");
         List<Character> letters = new ArrayList<>(proposedLetters);
@@ -93,6 +105,11 @@ public class Hangman implements Playable {
         System.out.println("");
     }
 
+    /**
+     * Demande une lettre pour le jeu en console.
+     *
+     * @return
+     */
     private char askForLetter() {
         char c;
         java.util.Scanner sc = new java.util.Scanner(System.in);
@@ -103,6 +120,12 @@ public class Hangman implements Playable {
         return c;
     }
 
+    /**
+     * Vérifie une lettre proposée par l'interface graphique. L'ajoute à la
+     * liste des lettres proposées, augmente les compteurs.
+     *
+     * @param letter
+     */
     public void proposeLetter(char letter) {
         if (!proposedLetters.contains(letter)) { // sinon on ajoute la lettre à la collection et on la traite
             proposedLetters.add(letter); // Ajout à la collection
@@ -132,6 +155,9 @@ public class Hangman implements Playable {
         return 0;
     }
 
+    /**
+     * Crée un nouveau jeu. Réinitialisation des atriburs du jeu et nouveau mot.
+     */
     public void newGame() {
         cnt = 0;
         errorCnt = 0;

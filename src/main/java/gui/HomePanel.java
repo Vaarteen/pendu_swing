@@ -22,6 +22,14 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import models.User;
 
+/**
+ * Le panneau visuel de la page d'accueil. Dans cette classe je crée une classe
+ * interne qui est un écouteur de liste déroulante. Pourquoi ? Parce que ja vais
+ * ajouter et supprimer cet écouteur sur la liste selon les cas, et par
+ * conséquent je dois avoir un écouteur nommé, donc une classe concrète.
+ *
+ * @author Herbert Caffarel
+ */
 public class HomePanel extends HangmanPanel {
 
     private static final long serialVersionUID = 1L;
@@ -29,9 +37,9 @@ public class HomePanel extends HangmanPanel {
     private final JPanel content, // Le panneau principal
             usersDropdownPanel; // Le paneau qui contient le dropdown de sélection du joueur
     private final Box playerSelection; // Le panel du choix du joueur
-    private final CenteredGameLabel playerSelectionLabel;
-    private final JComboBox playersDropdown;
-    private final transient UsersDropdownListener udl;
+    private final CenteredGameLabel playerSelectionLabel; // Le label du sélecteur de joueur
+    private final JComboBox playersDropdown; // Le sélecteur de joueur
+    private final transient UsersDropdownListener udl; // L'écouteur.
 
     public HomePanel(HangmanFrame frame) {
         super("Accueil", frame);
@@ -41,9 +49,13 @@ public class HomePanel extends HangmanPanel {
         playersDropdown = new JComboBox();
         usersDropdownPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
         udl = new UsersDropdownListener();
+        // Organisation du contenu visuel
         initGui();
     }
 
+    /**
+     * Organisation des ojets graphiques dans le panneau.
+     */
     private void initGui() {
         // Ajout de l'image de présentation 
         try {
@@ -54,8 +66,12 @@ public class HomePanel extends HangmanPanel {
         } catch (IOException ex) {
             Logger.getLogger(HomePanel.class.getName()).log(Level.SEVERE, null, ex);
         }
-        // Les joueurs
+        // La liste des joueurs. Elle doit être générée systématiquement, donc
+        // ici je ne mets que le composant grapique, il sera rempli ailleurs.
+        // Ce dropdown est éditable, donc on peut taper du texte dedans, pas
+        // seulement choisir une valeur existante dans la liste
         playersDropdown.setEditable(true);
+        // Couleur de la fonte et bordure pour éviter les caractères coupés
         playerSelectionLabel.getLabel().setForeground(Color.GREEN);
         playerSelectionLabel.getLabel().setBorder(BorderFactory.createEmptyBorder(5, 15, 5, 15));
         playerSelection.add(playerSelectionLabel);
@@ -64,9 +80,13 @@ public class HomePanel extends HangmanPanel {
         // Ajout des panels au content
         add(playerSelection, BorderLayout.EAST);
         add(content, BorderLayout.CENTER);
+        // Gestion évènementielle
         initEvents();
     }
 
+    /**
+     * Mise en place des gestions évènementielles du panneau.
+     */
     private void initEvents() {
         //  l'affichage de la card on met à jour la liste des joueurs
         addComponentListener(new ComponentAdapter() {
@@ -78,29 +98,63 @@ public class HomePanel extends HangmanPanel {
         });
     }
 
+    /**
+     * Remplit la liste des joueurs.
+     */
     @SuppressWarnings({"BoxedValueEquality", "NumberEquality"})
     private void fillUsers() {
+        // On supprime l'écouteur car chaque ajout dans la liste provoquera un
+        // évènement dont je ne veux pas, d'une part parce que c'est lourd et
+        // inutile, d'autre part parce que ça provoque une boucle infinie d'évènements !
         playersDropdown.removeItemListener(udl);
+        // Vider la liste
         playersDropdown.removeAllItems();
+        // Ajouter un élément vide pour pouvoir taper un nom au choix
         playersDropdown.addItem("");
+        // Ajouter tous les utilisateurs par ordre alphabétique
         for (User player : DAOFactory.getUserDao().getAllByName()) {
             playersDropdown.addItem(player);
+            // Au passage si on a le même joueur que le joueur courant, on le
+            // resélectionne (car son pointeur a changé, c'est une nouvelle liste !)
+            // ça permet d'avoir l'affichage qui correspond au joueur et de ne
+            // pas créer des joueurs qui n'existent pas...
             if (frame.getPlayer() != null && frame.getPlayer().getId() == player.getId()) {
                 frame.setPlayer(player);
             }
         }
+        // On présélectionne le joueur courant pour avoir un affichage qui suit le joueur
         playersDropdown.setSelectedItem(frame.getPlayer());
+        // On remet l'écouteur de sélection
         playersDropdown.addItemListener(udl);
     }
 
+    /**
+     * Associe le joueur fourni au jeu courant.
+     *
+     * @param player Le joueur à associer au jeu
+     */
     private void activatePlayer(User player) {
         frame.setPlayer(player);
+        // On réaffiche la liste des joueurs avec le joueur présélectionnée
         fillUsers();
-        frame.setPlayer(player);
     }
 
+    /**
+     * Classe interne d'un écouteur de liste déroulante. Lors de la sélection
+     * d'un joueur, on prend ce joueur. Si en revanche c'est une nouvelle valeur
+     * tapée au clavier, on vérifie d'abord si ce nom existe déjà auquel cas on
+     * le propose à l'utilisateur. S'il refuse, on demande un nouveau nom. Pour
+     * un nouveau nom on le persiste immédiatement dans la DB.
+     */
     private class UsersDropdownListener implements ItemListener {
 
+        /**
+         * Lors d'un sélection, il iy a 2 évènements : la désélection de
+         * l'ancienne valeur, et la sélection de la nouvelle valeur. On ne
+         * travaille que sur la sélection.
+         *
+         * @param e
+         */
         @Override
         public void itemStateChanged(ItemEvent e) {
             User player;

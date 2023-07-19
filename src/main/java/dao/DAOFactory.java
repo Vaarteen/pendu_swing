@@ -8,8 +8,8 @@ package dao;
  */
 public final class DAOFactory {
 
-    private static UserDao userDao;
-    private static WordDao wordDao;
+    private static UserDao userDao; // Le seul objet de type UserDao
+    private static WordDao wordDao; // Le seul objet de type WordDao
 
     private DAOFactory() {
     }
@@ -17,7 +17,7 @@ public final class DAOFactory {
     /**
      * Retourne une DAO sur la table user des utilisateurs.
      *
-     * @return
+     * @return L'objet de type UserDao
      */
     public static final UserDao getUserDao() {
         if (userDao == null) {
@@ -26,6 +26,11 @@ public final class DAOFactory {
         return userDao;
     }
 
+    /**
+     * Retourne une DAO sur la table des mots du dictionnaire.
+     *
+     * @return L'objet de type WordDao
+     */
     public static final WordDao getWordDao() {
         if (wordDao == null) {
             wordDao = new WordDao();

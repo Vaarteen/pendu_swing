@@ -4,6 +4,8 @@ package dao;
 import models.Bean;
 
 /**
+ * Une interface imposant la création des méthodes fondamentales d'accès à une
+ * table de DB.
  *
  * @author Herbert Caffarel
  * @param <T> Un objet de type Bean, donc possédant un id dont la correspondance

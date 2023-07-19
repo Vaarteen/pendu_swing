@@ -11,15 +11,22 @@ import java.util.logging.Logger;
 import models.Word;
 
 /**
+ * Classe de conversion du monde objet au monde relationnel. S'appuie sur le
+ * Bean Word, ainsi chaque instance de Word correspond à une ligne de la table
+ * word.
  *
  * @author Herbert Caffarel
  */
 public class WordDao extends DAO<Word> {
 
+    /**
+     * Constructeur. Il fournit le nom de la table cible à la classe mère DAO.
+     */
     public WordDao() {
         super("word");
     }
 
+    /* Implémentation des méthodes nécessaires imposées par la classe abstraite DAO */
     @Override
     public Word getById(Integer id) {
         Word word = null;
@@ -98,7 +105,12 @@ public class WordDao extends DAO<Word> {
         }
         return words;
     }
-
+    /* Implémentation des méthodes nécessaires pour le programme */
+    /**
+     * Retourne un mot au hasard depuis la table word.
+     *
+     * @return Un mot au hasard
+     */
     public Word getRandomWord() {
         Word word = null;
         String sql = "SELECT * FROM "
@@ -119,19 +131,21 @@ public class WordDao extends DAO<Word> {
         return word;
     }
 
+    /**
+     * Crée un mot dans la table word.
+     *
+     * @param word Le mot à ajouter à la table
+     */
     public void create(String word) {
-        String sql = "INSERT INTO "
-                + table
-                + " (word) VALUES (?)";
-        try {
-            PreparedStatement pstmt = conn.prepareStatement(sql);
-            pstmt.setString(1, word);
-            int lines = pstmt.executeUpdate();
-        } catch (SQLException ex) {
-            Logger.getLogger(WordDao.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        create(new Word(word));
     }
 
+    /**
+     * Retourne un Word connaissant le mot.
+     *
+     * @param word Le mot à trouver dans la DB
+     * @return L'instance de Word correspondante
+     */
     public Word getByWord(String word) {
         Word retValue = null;
         String sql = "SELECT * FROM "

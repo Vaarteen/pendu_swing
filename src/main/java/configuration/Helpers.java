@@ -18,11 +18,20 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
+ * Ce fichier contient des méthodes de support pour le projet. Toutes les
+ * méthodes sont statiques.
  *
  * @author Herbert
  */
 public class Helpers {
 
+    /**
+     * Retourne la configuration du projet. Cette configuration est lue dans le
+     * fichier config.properties qui se trouve dans le répertoires "resources".
+     * Si le fichier n'existe pas, des valeurs par défaut sont crées.
+     *
+     * @return Le dictionnaire des propriétés de configuration du programme.
+     */
     public static final Properties readConfig() {
         Properties config = new Properties();
         try (InputStream in = Helpers.class
@@ -47,6 +56,9 @@ public class Helpers {
         }
     }
 
+    /**
+     * Crée la DB avec des valeurs par défaut.
+     */
     private static void createDB() {
         try {
             // Récupération de la connexion

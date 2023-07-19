@@ -10,12 +10,23 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import models.User;
 
+/**
+ * Classe de conversion du monde objet au monde relationnel. S'appuie sur le
+ * Bean User, ainsi chaque instance de User correspond à une ligne de la table
+ * user.
+ *
+ * @author Herbert Caffarel
+ */
 public class UserDao extends DAO<User> {
 
+    /**
+     * Constructeur. Il fourni le nom de la table à la classe abstraite DAO.
+     */
     public UserDao() {
         super("user");
     }
 
+    /* Implémentation des méthodes nécessaires imposées par la classe abstraite DAO */
     @Override
     public User getById(Integer id) {
         User user = null;
@@ -101,6 +112,12 @@ public class UserDao extends DAO<User> {
         return users;
     }
 
+    /* Implémentation des méthodes nécessaires pour le programme */
+    /**
+     * Fournit les 10 joueurs avec le meilleurs score.
+     *
+     * @return Les 10 joueurs ayant le meoilleurs score par ordre décroissant.
+     */
     public List<User> getHallOfFame() {
         List<User> users = new ArrayList<>();
         String sql = "SELECT * FROM " + table
@@ -121,6 +138,11 @@ public class UserDao extends DAO<User> {
         return users;
     }
 
+    /**
+     * Fournit la liste des joueurs classés par nom.
+     *
+     * @return La liste des joueurs classés par nom.
+     */
     public List<User> getAllByName() {
         List<User> users = new ArrayList<>();
         String sql = "SELECT * FROM " + table
@@ -141,6 +163,12 @@ public class UserDao extends DAO<User> {
         return users;
     }
 
+    /**
+     * Fournit un joueur connaissant son nom.
+     *
+     * @param name Le nom du joueur recherché
+     * @return Le joueur s'il existe, null sinon.
+     */
     public User getByName(String name) {
         User user = null;
         String sql = "SELECT * FROM "
