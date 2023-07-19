@@ -9,8 +9,10 @@ import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import javax.swing.JFrame;
 import javax.swing.JMenuBar;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
+import models.User;
 
 /**
  *
@@ -18,9 +20,9 @@ import javax.swing.SwingUtilities;
  */
 public class HangmanFrame extends JFrame {
 
-    private static final String HOMEPANEL = "home";
-    private static final String HOFPANEL = "hof";
-    private static final String GAMEPANEL = "game";
+    public static final String HOMEPANEL = "home";
+    public static final String HOFPANEL = "hof";
+    public static final String GAMEPANEL = "game";
 
     private final JPanel content;
     private final HomePanel home;
@@ -28,6 +30,7 @@ public class HangmanFrame extends JFrame {
     private final GamePanel game;
     private final JMenuBar menubar;
     private final CardLayout cardLayout;
+    private User player;
 
     static { // Ce code s'exécute AVANT le constructeur
         // Récupération de l'environnement graphique de programme
@@ -44,9 +47,9 @@ public class HangmanFrame extends JFrame {
         super("Jouons au pendu");
         cardLayout = new CardLayout();
         content = new JPanel(cardLayout);
-        home = new HomePanel();
-        hof = new HallOfFamePanel();
-        game = new GamePanel();
+        home = new HomePanel(this);
+        hof = new HallOfFamePanel(this);
+        game = new GamePanel(this);
         menubar = new HangmanMenubar(content);
         initGui(); // Initialisation du contenu
         setDefaultCloseOperation(DISPOSE_ON_CLOSE); // Fermeture du programme
@@ -72,6 +75,20 @@ public class HangmanFrame extends JFrame {
                 hof.showList();
             }
         });
+        game.addComponentListener(new ComponentAdapter() {
+            @Override
+            public void componentShown(ComponentEvent e) {
+                if (player == null) {
+                    JOptionPane.showMessageDialog(
+                            HangmanFrame.this,
+                            "Vous devez d'abord choisir un joueur !",
+                            "Erreur",
+                            JOptionPane.ERROR_MESSAGE
+                    );
+                    cardLayout.show(content, HOMEPANEL);
+                }
+            }
+        });
 
         setContentPane(content);
         setJMenuBar(menubar);
@@ -95,6 +112,14 @@ public class HangmanFrame extends JFrame {
 
     public CardLayout getCardLayout() {
         return cardLayout;
+    }
+
+    public User getPlayer() {
+        return player;
+    }
+
+    public void setPlayer(User player) {
+        this.player = player;
     }
 
 }
