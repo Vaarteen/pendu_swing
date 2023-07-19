@@ -55,7 +55,7 @@ public class HangmanFrame extends JFrame {
         hof = new HallOfFamePanel(this);
         home = new HomePanel(this);
         game = new GamePanel(this);
-        menubar = new HangmanMenubar(content);
+        menubar = new HangmanMenubar(this);
         homeBtn = new JButton("Accueil");
         hofBtn = new JButton("Hall of Fame");
         gameBtn = new JButton("Jouer");
