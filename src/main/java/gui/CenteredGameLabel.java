@@ -36,4 +36,8 @@ public class CenteredGameLabel extends JPanel {
         label.setIcon(icon);
     }
 
+    public JLabel getLabel() {
+        return label;
+    }
+
 }
