@@ -54,14 +54,14 @@ public class Helpers {
             // Création des tables
             String req = "CREATE TABLE IF NOT EXISTS user ("
                     + "id_user integer PRIMARY KEY,"
-                    + "name text NOT NULL UNIQUE,"
+                    + "name text NOT NULL UNIQUE COLLATE NOCASE,"
                     + "score integer NOT NULL"
                     + ");";
             Statement stmt = conn.createStatement();
             stmt.execute(req);
             req = "CREATE TABLE IF NOT EXISTS word ("
                     + "id_word integer PRIMARY KEY,"
-                    + "word text NOT NULL UNIQUE"
+                    + "word text NOT NULL UNIQUE COLLATE NOCASE"
                     + ");";
             stmt.execute(req);
             req = "CREATE TABLE IF NOT EXISTS word_by_user ("

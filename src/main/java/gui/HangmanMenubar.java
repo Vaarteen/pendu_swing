@@ -111,13 +111,22 @@ public class HangmanMenubar extends JMenuBar {
                 JOptionPane.QUESTION_MESSAGE
         );
         if (word.matches("^[a-zA-Zàâäéèêëîïôöùûüÿç]+$")) {
-            DAOFactory.getWordDao().persist(new Word(word));
-            JOptionPane.showMessageDialog(
-                    frame,
-                    "Le mot " + word + " a été ajouté au dictionnaire.",
-                    "Validé !",
-                    JOptionPane.PLAIN_MESSAGE
-            );
+            if (DAOFactory.getWordDao().getByWord(word) != null) {
+                JOptionPane.showMessageDialog(
+                        frame,
+                        "Le mot " + word + " existe déjà dans le dictionnaire.",
+                        "Inutile !",
+                        JOptionPane.INFORMATION_MESSAGE
+                );
+            } else {
+                DAOFactory.getWordDao().persist(new Word(word));
+                JOptionPane.showMessageDialog(
+                        frame,
+                        "Le mot " + word + " a été ajouté au dictionnaire.",
+                        "Validé !",
+                        JOptionPane.INFORMATION_MESSAGE
+                );
+            }
         } else {
             JOptionPane.showMessageDialog(
                     frame,
