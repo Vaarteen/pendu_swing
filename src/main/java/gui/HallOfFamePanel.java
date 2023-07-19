@@ -17,8 +17,8 @@ public class HallOfFamePanel extends HangmanPanel {
     private final Font firstRankFont, secondRankFont, thirdRankFont, otherRankFont;
     private List<User> users;
 
-    public HallOfFamePanel() {
-        super("Hall of Fame");
+    public HallOfFamePanel(HangmanFrame frame) {
+        super("Hall of Fame", frame);
         users = DAOFactory.getUserDao().getHallOfFame();
         listPanel = Box.createVerticalBox();
         firstRankFont = new Font("Retro Flower", Font.ITALIC | Font.BOLD, 48);

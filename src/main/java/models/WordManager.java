@@ -35,7 +35,8 @@ public class WordManager {
         return word.getWord();
     }
 
-    public String getShadowedWord() {
+    public String getShadowedWord(Collection<Character> knownLetters) {
+        createShadowedWord(knownLetters);
         return shadowedWord;
     }
 
@@ -68,7 +69,7 @@ public class WordManager {
      *
      * @param knownLetters : les lettres connues
      */
-    public void createShadowedWord(Collection<Character> knownLetters) {
+    private void createShadowedWord(Collection<Character> knownLetters) {
         StringBuilder shadow = new StringBuilder();
         String w = this.word.getWord();
         for (int i = 0; i < w.length(); i++) {

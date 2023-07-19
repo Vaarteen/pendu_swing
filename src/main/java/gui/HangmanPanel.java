@@ -14,12 +14,14 @@ import javax.swing.SwingConstants;
  */
 public class HangmanPanel extends JPanel {
 
+    protected final HangmanFrame frame;
     protected final BorderLayout layout;
     protected final String title;
     protected final JLabel titleLabel;
     protected Font titleFont;
 
-    public HangmanPanel(String title) {
+    public HangmanPanel(String title, HangmanFrame frame) {
+        this.frame = frame;
         this.title = title;
         layout = new BorderLayout();
         // Récupération de la fonte personnalisée
