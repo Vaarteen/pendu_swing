@@ -1,6 +1,7 @@
 package gui;
 
 import dao.DAOFactory;
+import static gui.HangmanFrame.HOMEPANEL;
 import java.awt.BorderLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
@@ -100,7 +101,15 @@ public class GamePanel extends HangmanPanel {
         this.addComponentListener(new ComponentAdapter() {
             @Override
             public void componentShown(ComponentEvent e) {
-                if (game.isGameEnded()) {
+                if (frame.getParent() == null) {
+                    JOptionPane.showMessageDialog(
+                            frame,
+                            "Vous devez d'abord choisir un joueur !",
+                            "Erreur",
+                            JOptionPane.ERROR_MESSAGE
+                    );
+                    frame.getCardLayout().show(frame.getContent(), HOMEPANEL);
+                } else if (game.isGameEnded()) {
                     newGame();
                 }
             }
@@ -203,11 +212,17 @@ public class GamePanel extends HangmanPanel {
      * Traitements lors de la perte du jeu.
      */
     private void looseGame() {
+        // calcul du score rapporté par le mot
+        int score = wm.getWord().length();
         // Aficher le message d'information
         String msg = "Vous avez maheureusement perdu\nLe mot à trouver était : " + wm.getWord();
         JOptionPane.showMessageDialog(frame, msg, "Perdu !", JOptionPane.ERROR_MESSAGE);
         // Désactiver le clavier virtuel
         setKeyboardActivation(false);
+        // Ôter le score au joueur et le persister en DB
+        User player = frame.getPlayer();
+        player.setScore(player.getScore() - score);
+        DAOFactory.getUserDao().persist(player);
         // Demander si on rejoue
         checkReplay();
     }

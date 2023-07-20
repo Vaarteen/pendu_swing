@@ -66,14 +66,14 @@ public class Helpers {
             // Création des tables
             String req = "CREATE TABLE IF NOT EXISTS user ("
                     + "id_user integer PRIMARY KEY,"
-                    + "name text NOT NULL UNIQUE COLLATE NOCASE,"
+                    + "name text NOT NULL UNIQUE COLLATE NOCASE," // unique et insensible à la casse
                     + "score integer NOT NULL"
                     + ");";
             Statement stmt = conn.createStatement();
             stmt.execute(req);
             req = "CREATE TABLE IF NOT EXISTS word ("
                     + "id_word integer PRIMARY KEY,"
-                    + "word text NOT NULL UNIQUE COLLATE NOCASE"
+                    + "word text NOT NULL UNIQUE COLLATE NOCASE" // unique et insensible à la casse
                     + ");";
             stmt.execute(req);
             req = "CREATE TABLE IF NOT EXISTS word_by_user ("
@@ -84,7 +84,10 @@ public class Helpers {
             stmt.execute(req);
             // Ajout des données dans la table user
             req = "INSERT INTO user (name, score) VALUES "
-                    + "('admin', 0), ('Alf', 5), ('Sophie', 6);";
+                    + "('admin', 0), ('Alf', 1), ('Sophie', 2), "
+                    + "('Guy', 3), ('Zoé', 4), ('Muriel', 5), "
+                    + "('Alex', 6), ('Roxane', 7), ('Julia', 8), "
+                    + "('Terminator', 9), ('Erasor', 10), ('Beast', 12);";
             stmt.execute(req);
             // Ajout des données dans la table word à partir du fichier
             // dictionnaire s'il existe, en dur sinon

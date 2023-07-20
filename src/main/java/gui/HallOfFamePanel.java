@@ -4,6 +4,8 @@ import dao.DAOFactory;
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
 import java.awt.Font;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import java.util.List;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
@@ -48,6 +50,21 @@ public class HallOfFamePanel extends HangmanPanel {
         add(listPanel, BorderLayout.CENTER);
         // Afficher la liste
         showList();
+        // Gestion évènementielle
+        initEvents();
+    }
+
+    /**
+     * Mise en place des gestions évènementielles du panneau.
+     */
+    private void initEvents() {
+        // Lors de l'affichage on réinitialise le contenu de la liste
+        addComponentListener(new ComponentAdapter() {
+            @Override
+            public void componentShown(ComponentEvent e) {
+                showList();
+            }
+        });
     }
 
     /**

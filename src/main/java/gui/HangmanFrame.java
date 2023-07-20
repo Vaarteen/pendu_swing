@@ -7,12 +7,9 @@ import java.awt.CardLayout;
 import java.awt.FlowLayout;
 import java.awt.GraphicsEnvironment;
 import java.awt.HeadlessException;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JMenuBar;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 import models.User;
@@ -121,28 +118,6 @@ public class HangmanFrame extends JFrame {
      * Mise en place des gestions évènementielles du panneau.
      */
     private void initEvents() {
-        // Mise à jour du hall of fame lors de son affichage
-        hof.addComponentListener(new ComponentAdapter() {
-            @Override
-            public void componentShown(ComponentEvent e) {
-                hof.showList();
-            }
-        });
-        // Un joueur doit être sélectionné pour pouvoir jouer
-        game.addComponentListener(new ComponentAdapter() {
-            @Override
-            public void componentShown(ComponentEvent e) {
-                if (player == null) {
-                    JOptionPane.showMessageDialog(
-                            HangmanFrame.this,
-                            "Vous devez d'abord choisir un joueur !",
-                            "Erreur",
-                            JOptionPane.ERROR_MESSAGE
-                    );
-                    cardLayout.show(content, HOMEPANEL);
-                }
-            }
-        });
         // Affichage de la page d'accueil sur clic du bouton home
         homeBtn.addActionListener((e) -> {
             cardLayout.show(content, HOMEPANEL);
