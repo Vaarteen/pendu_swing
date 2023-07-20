@@ -101,7 +101,7 @@ public class GamePanel extends HangmanPanel {
         this.addComponentListener(new ComponentAdapter() {
             @Override
             public void componentShown(ComponentEvent e) {
-                if (frame.getParent() == null) {
+                if (frame.getPlayer() == null) {
                     JOptionPane.showMessageDialog(
                             frame,
                             "Vous devez d'abord choisir un joueur !",
