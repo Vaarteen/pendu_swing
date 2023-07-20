@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import models.User;
 import models.Word;
 
 /**
@@ -105,19 +106,30 @@ public class WordDao extends DAO<Word> {
         }
         return words;
     }
-    /* Implémentation des méthodes nécessaires pour le programme */
+
     /**
-     * Retourne un mot au hasard depuis la table word.
+     * Retourne un mot au hasard depuis la table word pour un joueur donné. Ceci
+     * afin de répondre à la demande de ne pas avoir 2 fois le même mot avant
+     * d'avoir fait le tour du dictionnaire. L'algorithme : tirer un mot parmi
+     * ceux non déjà vu par le joueur. Si il n'y a pas de réponse, on supprime
+     * toutes les associations word-user de la table de passage pour remettre à
+     * 0 le dictionnaire pour ce joueur et on tire un mot au hasard. La requête
+     * SQL utilise une sous-requête qui donne tous les id_word associés à
+     * l'id_user concerné, la requête prinsipale tire un mot parmi les id_word
+     * qui ne sont pas ressortis de la sous-requête.
      *
-     * @return Un mot au hasard
+     * @param id_user L'identifiant du joueur
+     * @return Un mot au hasard pas encore utilisé pour ce joueur.
      */
-    public Word getRandomWord() {
+    public Word getRandomWordForPlayer(int id_user) {
         Word word = null;
-        String sql = "SELECT * FROM "
-                + table
+        String sql = "SELECT * FROM word w LEFT NATURAL JOIN word_by_user wbu"
+                + " WHERE w.id_word NOT IN"
+                + " (SELECT id_word FROM word_by_user WHERE id_user=?)"
                 + " ORDER BY RANDOM() LIMIT 1";
         try {
             PreparedStatement pstmt = conn.prepareStatement(sql);
+            pstmt.setInt(1, id_user);
             ResultSet rs = pstmt.executeQuery();
             while (rs.next()) { // SQLite ne supporte pas first()
                 word = new Word(
@@ -125,10 +137,43 @@ public class WordDao extends DAO<Word> {
                         rs.getString("word")
                 );
             }
+            if (word == null) { // Tous les mots ont été utilisés, on remet à zéro
+                sql = "DELETE FROM word_by_user WHERE id_user=?";
+                pstmt = conn.prepareStatement(sql);
+                pstmt.setInt(1, id_user);
+                pstmt.executeUpdate();
+                // puis on tire un nouveau mot au hasard
+                word = getRandomWordForPlayer(id_user);
+            } else {
+                // On n'oublie pas d'associer le mot au joueur
+                sql = "INSERT INTO word_by_user (id_user, id_word) VALUES (?, ?)";
+                pstmt = conn.prepareStatement(sql);
+                pstmt.setInt(1, id_user);
+                pstmt.setInt(2, word.getId());
+                pstmt.executeUpdate();
+            }
         } catch (SQLException ex) {
             Logger.getLogger(WordDao.class.getName()).log(Level.SEVERE, null, ex);
         }
         return word;
+    }
+
+    /**
+     * Retourne un mot au hasard depuis la table word pour un joueur donné. Ceci
+     * afin de répondre à la demande de ne pas avoir 2 fois le même mot avant
+     * d'avoir fait le tour du dictionnaire. L'algorithme : tirer un mot parmi
+     * ceux non déjà vu par le joueur. Si il n'y a pas de réponse, on supprime
+     * toutes les associations word-user de la table de passage pour remettre à
+     * 0 le dictionnaire pour ce joueur et on tire un mot au hasard. La requête
+     * SQL utilise une sous-requête qui donne tous les id_word associés à
+     * l'id_user concerné, la requête prinsipale tire un mot parmi les id_word
+     * qui ne sont pas ressortis de la sous-requête.
+     *
+     * @param player Le joueur
+     * @return Un mot au hasard
+     */
+    public Word getRandomWordForPlayer(User player) {
+        return player == null ? null : getRandomWordForPlayer(player.getId());
     }
 
     /**

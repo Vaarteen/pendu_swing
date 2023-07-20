@@ -21,17 +21,16 @@ import java.util.logging.Logger;
  * @author Herbert
  */
 public class WordManager {
-    
+
     private Word word; // Le mot encapsulé
     private String shadowedWord; // Le mot masqué
     private static final Properties config = Helpers.readConfig(); // La configuration du jeu
 
     /**
-     * Constructeur. Il initialise un nouveau mot automatiquement.
+     * Constructeur.
      */
     public WordManager() {
         this.word = new Word();
-        initializeRandomWord();
     }
 
     /**
@@ -71,14 +70,14 @@ public class WordManager {
      * programme.
      *
      */
-    public void initializeRandomWord() {
+    public void initializeRandomWord(User player) {
         String w = null;
         switch (config.getProperty("wordSource")) {
             case "file": // dictionnaire fichier
                 w = initializeRandomWordFromFile(config.getProperty("dictName"));
                 break;
             case "database": // dictionnaire DB
-                w = initializeRandomWordFromDb(config.getProperty("dbName"));
+                w = initializeRandomWordFromDb(config.getProperty("dbName"), player);
                 break;
             default: // Dictionnaire en dur
                 initializeRandomWordFromArray();
@@ -154,10 +153,10 @@ public class WordManager {
      * @param dbName Le nom de la DB SQLite
      * @return un mot tiré au hasard dans la DB
      */
-    private String initializeRandomWordFromDb(String dbName) {
-        String w;
+    private String initializeRandomWordFromDb(String dbName, User player) {
+        String w = null;
         try {
-            w = DAOFactory.getWordDao().getRandomWord().getWord();
+            w = DAOFactory.getWordDao().getRandomWordForPlayer(player).getWord();
         } catch (Exception ex) { // En cas d'erreur d'accès à la DB on tire dans un tableau en dur
             Logger.getLogger(WordManager.class.getName()).log(Level.SEVERE, null, ex);
             w = initializeRandomWordFromArray();

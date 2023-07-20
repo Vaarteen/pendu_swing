@@ -32,7 +32,7 @@ public class Hangman implements Playable {
         this.wordManager = new WordManager();
         this.proposedLetters = new ArrayList<>();
         this.ERROR_MAX = Integer.parseInt(config.getProperty("maxError"));
-        this.gameEnded = false;
+        this.gameEnded = true;
     }
 
     /* getters et setters */
@@ -158,11 +158,11 @@ public class Hangman implements Playable {
     /**
      * Crée un nouveau jeu. Réinitialisation des atriburs du jeu et nouveau mot.
      */
-    public void newGame() {
+    public void newGame(User player) {
         cnt = 0;
         errorCnt = 0;
         proposedLetters.clear();
-        wordManager.initializeRandomWord();
+        wordManager.initializeRandomWord(player);
         gameEnded = false;
     }
 

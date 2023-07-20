@@ -127,7 +127,9 @@ public class GamePanel extends HangmanPanel {
      * correspondant.
      */
     private void showShadowedWord() {
-        wordLabel.setText(wm.getShadowedWord(game.getProposedLetters()));
+        if (frame.getPlayer() != null) {
+            wordLabel.setText(wm.getShadowedWord(game.getProposedLetters()));
+        }
     }
 
     /**
@@ -135,11 +137,13 @@ public class GamePanel extends HangmanPanel {
      * adequat.
      */
     private void showUsedLetters() {
-        StringBuilder sb = new StringBuilder();
-        for (char c : game.getProposedLetters()) {
-            sb.append(c);
+        if (frame.getPlayer() != null) {
+            StringBuilder sb = new StringBuilder();
+            for (char c : game.getProposedLetters()) {
+                sb.append(c);
+            }
+            lettersLabel.setText(sb.toString());
         }
-        lettersLabel.setText(sb.toString());
     }
 
     /**
@@ -231,7 +235,7 @@ public class GamePanel extends HangmanPanel {
      * Mise en place d'un nouveau jeu.
      */
     public void newGame() {
-        game.newGame(); // Nouveau mot à trouver.
+        game.newGame(frame.getPlayer()); // Nouveau mot à trouver.
         setKeyboardActivation(true); // Activer le clavier virtuel
         update(); // Mise à jour de l'affichage
     }
