@@ -36,7 +36,7 @@ public class HallOfFamePanel extends HangmanPanel {
         listPanel = Box.createVerticalBox();
         firstRankFont = new Font("Retro Flower", Font.ITALIC | Font.BOLD, 48);
         secondRankFont = new Font("Retro Flower", Font.ITALIC | Font.BOLD, 36);
-        thirdRankFont = new Font("Retro Flower", Font.ITALIC | Font.BOLD, 24);
+        thirdRankFont = new Font("Retro Flower", Font.ITALIC | Font.BOLD, 30);
         otherRankFont = new Font("Retro Flower", Font.PLAIN, 24);
         // Organisation du contenu visuel
         initGui();
