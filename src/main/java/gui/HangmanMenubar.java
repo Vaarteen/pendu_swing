@@ -116,7 +116,7 @@ public class HangmanMenubar extends JMenuBar {
         // Ajout d'un mot au dictionnaire => admin seulement
         addWord.addActionListener((e) -> {
             // Si pas admin on affiche un message d'erreur
-            if (frame.getPlayer().getId() != 1) {
+            if (frame.getPlayer() == null || frame.getPlayer().getId() != 1) {
                 JOptionPane.showMessageDialog(
                         frame,
                         "Vous devez être administrateur !",
